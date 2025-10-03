@@ -9,14 +9,22 @@ namespace Comanda.Api.Controllers
     [ApiController]
     public class ComandaController : ControllerBase
     {
-        List<ComandaItem> comandas = new List<ComandaItem>()
+        List<Models.Comanda> comandas = new List<Models.Comanda>()
         {
-            new ComandaItem()
+            new Models.Comanda()
             {
                 Id = 1,
-                Descricao = 
+                NomeCliente = "Ana",
+                NumeroMesa = 1
+            },
+            new Models.Comanda()
+            {
+                Id = 2,
+                NomeCliente = "Bruno",
+                NumeroMesa = 2
             }
-        }
+        };
+
         // GET: api/<ComandaController>
         [HttpGet]
         public IEnumerable<string> Get()
