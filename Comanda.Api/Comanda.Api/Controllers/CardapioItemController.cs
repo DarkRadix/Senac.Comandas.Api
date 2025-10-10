@@ -1,4 +1,5 @@
-﻿using Comanda.Api.Models;
+﻿using Comanda.Api.DTOs;
+using Comanda.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -10,6 +11,7 @@ namespace Comanda.Api.Controllers
     [ApiController] // DEFINE QUE ESSA CLASSE É UM CONTROLADOR DE API
     public class CardapioItemController : ControllerBase // HERDA DE CONTROLLERBASE para PODER RESPONDER A REQUISICOES HTTP
     {
+        private const string Value = $"Cardapio (id) não encontrado";
         List<CardapioItem> cardapios = new List<CardapioItem>()
         {
             new CardapioItem
@@ -55,14 +57,54 @@ namespace Comanda.Api.Controllers
 
         // POST api/<CardapioItemController>
         [HttpPost]
-        public void Post([FromBody]string value)
+        public IResult Post([FromBody]CardapioItemCreateRequest cardapio)
         {
+            if(cardapio.Titulo.Length < 3)
+            {
+                Results.BadRequest("O título deve ter no mínimo 3 caracteres.");
+            }
+            if(cardapio.Descricao.Length < 5)
+            {
+                Results.BadRequest("A descrição deve ter no mínimo 5 caracteres.");
+            }
+            if(cardapio.Preco <= 0)
+            {
+                Results.BadRequest("O preço deve ser maior que zero.");
+            }
+            var cardapioItem = new CardapioItem
+            {
+                Id = cardapios.Count + 1,
+                Titulo = cardapio.Titulo,
+                Descricao = cardapio.Descricao,
+                Preco = cardapio.Preco,
+                PossuiPreparo = cardapio.PossuiPreparo
+            };
+            cardapios.Add(cardapioItem);
+            return Results.Created($"/api/cardapio/{cardapioItem.Id}", cardapioItem);
         }
 
         // PUT api/<CardapioItemController>/5
+        /// <summary>
+        /// Atualiza um item do cardápio
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="cardapio"></param>
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public IResult Put(int id, [FromBody]CardapioItemUpdateRequest cardapio)
         {
+           var cardapioItem = cardapios.
+                FirstOrDefault(c => c.Id == id);
+            if (cardapioItem is null)
+            return Results.NotFound($"Usuario do id {id} nao encontrado.");
+
+
+            cardapioItem.Titulo = cardapio.Titulo;
+            cardapioItem.Descricao = cardapio.Descricao;
+            cardapioItem.Preco = cardapio.Preco;
+            cardapioItem.PossuiPreparo = cardapio.PossuiPreparo;
+
+            return Results.NoContent();
+
         }
 
         // DELETE api/<CardapioItemController>/5

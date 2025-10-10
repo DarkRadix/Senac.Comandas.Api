@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Comanda.Api.DTOs;
 using Comanda.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,14 +49,34 @@ namespace Comanda.Api.Controllers
 
         // POST api/<MesaController>
         [HttpPost]
-        public void Post([FromBody]string value)
+        public IResult Post([FromBody]MesaCreateRequest mesaCreate)
         {
+            if (mesaCreate.NumeroMesa <= 0)
+                return Results.BadRequest("O número da mesa deve ser maior que zero.");
+            var mesa = new Mesa
+            {
+                Id = mesas.Count + 1,
+                NumeroMesa = mesaCreate.NumeroMesa,
+                SituacaoMesa = (int)SituacaoMesa.Livre
+            };
+            mesas.Add(mesa);
+            return Results.Created($"/api/mesa/{mesa.Id}", mesa);
         }
 
         // PUT api/<MesaController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public IResult Put(int id, [FromBody]MesaUpdateRequest mesaUpdate)
         {
+            var mesa = mesas.FirstOrDefault(m => m.Id == id);
+            if (mesa is null)
+                return Results.NotFound("Mesa não encontrada!");
+            if (mesaUpdate.NumeroMesa <= 0)
+                return Results.BadRequest("O número da mesa deve ser maior que zero.");
+            if (mesaUpdate.SituacaoMesa < 0 || mesaUpdate.SituacaoMesa > 2)
+                return Results.BadRequest("A situação da mesa deve ser 0 (Livre), 1 (Ocupada) ou 2 (Reservado).");
+            mesa.NumeroMesa = mesaUpdate.NumeroMesa;
+            mesa.SituacaoMesa = mesaUpdate.SituacaoMesa;
+            return Results.Ok(mesa);
         }
 
         // DELETE api/<MesaController>/5
