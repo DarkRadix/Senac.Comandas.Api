@@ -56,9 +56,30 @@ namespace Comanda.Api.Controllers
 
         // POST api/<CardapioItemController>
         [HttpPost]
-        public void Post([FromBody] CardapioItemCreateRequest cardapio)
+        public IResult Post([FromBody] CardapioItemCreateRequest cardapio)
         {
-
+            if (cardapio.Titulo.Length < 3)
+            {
+                return Results.BadRequest("O título do item do cardápio deve ter no mínimo 3 caracteres.");
+            }
+            if (cardapio.Descricao.Length < 5)
+            {
+                return Results.BadRequest("A descrição do item do cardápio deve ter no mínimo 5 caracteres.");
+            }
+            if (cardapio.Preco <= 0)
+            {
+                return Results.BadRequest("O preço do item do cardápio deve ser maior que zero.");
+            }
+            var cardapioItem = new CardapioItem
+            {
+                Id = cardapios.Count + 1,
+                Titulo = cardapio.Titulo,
+                Descricao = cardapio.Descricao,
+                Preco = cardapio.Preco,
+                PossuiPreparo = cardapio.PossuiPreparo
+            };
+            cardapios.Add(cardapioItem);
+            return Results.Created($"/api/cardapioitem/{cardapioItem.Id}", cardapioItem);
         }
 
         // PUT api/<CardapioItemController>/5
