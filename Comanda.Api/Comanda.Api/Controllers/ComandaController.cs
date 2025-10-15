@@ -10,19 +10,38 @@ namespace Comanda.Api.Controllers
     [ApiController]
     public class ComandaController : ControllerBase
     {
-        List<Models.Comanda> comandas = new List<Models.Comanda>()
+        static List<Models.Comanda> comandas = new List<Models.Comanda>()
         {
             new Models.Comanda()
             {
                 Id = 1,
                 NomeCliente = "Ana",
-                NumeroMesa = 1
+                NumeroMesa = 1,
+                Itens = new List<ComandaItem>()
+                {
+                    new ComandaItem()
+                    {
+                        Id = 1,
+                        CardapioItemId = 1,
+                        ComandaId = 1
+                    },
+                   
+                }
             },
             new Models.Comanda()
             {
                 Id = 2,
                 NomeCliente = "Bruno",
-                NumeroMesa = 2
+                NumeroMesa = 2,
+                Itens = new List<ComandaItem>()
+                {
+                 new ComandaItem()
+                    {
+                        Id = 2,
+                        CardapioItemId = 2,
+                        ComandaId = 1
+                    }
+                }
             }
         };
 
@@ -50,20 +69,48 @@ namespace Comanda.Api.Controllers
                 return Results.BadRequest("O número da mesa deve ser maior que zero.");
             if(comandaCreate.CardapioItemsIds.Length == 0)
                 return Results.BadRequest("A comanda deve ter pelo menos um item do cardápio.");
-            var comanda = new Models.Comanda
+            var newComanda = new Models.Comanda
             {
                 Id = comandas.Count + 1,
                 NomeCliente = comandaCreate.NomeCliente,
                 NumeroMesa = comandaCreate.NumeroMesa
             };
-            comandas.Add(comanda);
-            return Results.Created($"/api/comanda/{comanda.Id}", comanda);
+            var comandaItens = new List<ComandaItem>();
+            foreach (int cardapioItemId in comandaCreate.CardapioItemsIds)
+            {
+                var comandaItemId = comandaItens.Count + 1;
+                var comandaItemCardapio = new ComandaItem
+                {
+                    Id = comandaItemId,
+                    CardapioItemId = cardapioItemId,
+                    ComandaId = newComanda.Id
+                };
+                comandaItens.Add(comandaItemCardapio);
+               
+            }
+
+            comandas.Add(newComanda);
+            return Results.Created($"/api/comanda/{newComanda.Id}", newComanda);
         }
 
         // PUT api/<ComandaController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+
+        public IResult Put(int id, [FromBody]ComandaUpdateRequest comandaUpdate)
         {
+            var comanda = comandas.FirstOrDefault(c => c.Id == id);
+            if(comanda is null)
+                return Results.NotFound("Comanda não encontrada!");
+            if(comandaUpdate.NomeCliente.Length < 3)
+                return Results.BadRequest("O nome do cliente deve ter no mínimo 3 caracteres.");
+            if (comandaUpdate.NumeroMesa <= 0)
+                return Results.BadRequest("O número da mesa deve ser maior que zero.");
+
+            //atualiza as informações da comanda
+            comanda.NomeCliente = comandaUpdate.NomeCliente;
+            comanda.NumeroMesa = comandaUpdate.NumeroMesa;
+            //retorna 204 sem conteúdo
+            return Results.NoContent();
 
         }
 
