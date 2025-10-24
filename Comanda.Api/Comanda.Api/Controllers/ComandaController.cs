@@ -10,45 +10,11 @@ namespace Comanda.Api.Controllers
     [ApiController]
     public class ComandaController : ControllerBase
     {
-        static List<Models.Comanda> comandas = new List<Models.Comanda>()
+        public ComandasDBContext _context { get; set; }
+        public ComandaController(ComandasDBContext context)
         {
-            new Models.Comanda()
-            {
-                Id = 1,
-                NomeCliente = "Ana",
-                NumeroMesa = 1,
-                Itens = new List<ComandaItem>
-                {
-                    new ComandaItem
-                    {
-                        Id = 1, 
-                        CardapioItemId = 1, 
-                        ComandaId = 1,
-                    },
-                    new ComandaItem
-                    {
-                        Id = 2,
-                        CardapioItemId = 2,
-                        ComandaId = 1,
-                    }
-                }
-            },
-            new Models.Comanda()
-            {
-                Id = 1,
-                NomeCliente = "Bruno",
-                NumeroMesa = 2,
-                Itens = new List<ComandaItem>
-                {
-                    new ComandaItem
-                    {
-                        Id = 3,
-                        CardapioItemId = 1,
-                        ComandaId = 1,
-                    }
-                }
-            }
-        };
+            _context = context;
+        }
 
         // GET: api/<ComandaController>
         [HttpGet]

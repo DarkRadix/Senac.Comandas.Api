@@ -10,27 +10,18 @@ namespace Comanda.Api.Controllers
     [ApiController]
     public class UsuarioController : ControllerBase
     {
-        // lista fixa de usuários
-        static List<Usuario> usuarios = new List<Usuario> {
-            new Usuario
-            {
-                Id = 1,
-                Nome = "Admin",
-                Email = "admin@admin.com",
-                Senha = "admin"
-            },
-            new Usuario
-            {
-                Id = 2,
-                Nome = "Usuario",
-                Email = "usuario@usuario.com",
-                Senha = "usuario"
-            }
-        };
+        // variavel que representa o banco de dados
+        public ComandasDBContext _context { get; set; }
+        public UsuarioController(ComandasDBContext context)
+        {
+            _context = context;
+        }
+
         // GET: api/<UsuarioController>
         [HttpGet]
         public IResult Get()
         {
+            var usuarios = _context.Usuarios.ToList();
             return Results.Ok(usuarios);
         }
 
@@ -38,8 +29,7 @@ namespace Comanda.Api.Controllers
         [HttpGet("{id}")]
         public IResult Get(int id)
         {
-            var usuario = usuarios.
-                FirstOrDefault(u => u.Id == id);
+            var usuario = _context.Usuarios.FirstOrDefault(u => u.Id == id);
             if(usuario is null)
                 return Results.NotFound("Usuário não encontrado!");
 
@@ -59,13 +49,13 @@ namespace Comanda.Api.Controllers
 
             var usuario = new Usuario
             {
-                Id = usuarios.Count + 1,
                 Nome = usuarioCreate.Nome,
                 Email = usuarioCreate.Email,
                 Senha = usuarioCreate.Senha
             };
             // adicionar o usuário na lista
-            usuarios.Add(usuario);
+            _context.Usuarios.Add(usuario);
+            _context.SaveChanges();
 
             return Results.Created($"/api/usuario/{usuario.Id }", usuario);
 
@@ -81,16 +71,21 @@ namespace Comanda.Api.Controllers
         [HttpPut("{id}")]
         public IResult Put(int id, [FromBody] UsuarioUpdateRequest usuarioUpdate)
         {
-            // busca o usuário na lista pelo id
-            var usuario = usuarios.
-                FirstOrDefault(u => u.Id == id);
+            if (usuarioUpdate.Senha.Length < 6)
+                return Results.BadRequest("A senha deve ter no mínimo 6 caracteres.");
+
             // se não encontrar retorno notfound
+            var usuario = _context.Usuarios.FirstOrDefault(u => u.Id == id);
             if (usuario is null)
                 return Results.NotFound($"Usuário do id {id} não encontrado.");
             // atualiza o usuário
             usuario.Nome = usuarioUpdate.Nome;
             usuario.Email = usuarioUpdate.Email;
             usuario.Senha = usuarioUpdate.Senha;
+
+
+            _context.SaveChanges();
+
             // retorno no content
             return Results.NoContent();
         }
@@ -99,15 +94,15 @@ namespace Comanda.Api.Controllers
         [HttpDelete("{id}")]
         public IResult Delete(int id)
         {
-            var usuario = usuarios
-                .FirstOrDefault(u => u.Id == id);
+            var usuario = _context.Usuarios.FirstOrDefault(u => u.Id == id);
 
             if (usuario is null)
                 return Results.NotFound($"Usuário {id} não encontrado!");
 
-            var usuarioRemovido = usuarios.Remove(usuario);
+            _context.Usuarios.Remove(usuario);
+            var removido = _context.SaveChanges();
 
-            if (usuarioRemovido)
+            if (removido>0)
                 return Results.NoContent();
 
             return Results.StatusCode(500);
