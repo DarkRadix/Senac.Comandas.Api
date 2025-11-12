@@ -13,31 +13,32 @@ namespace Comanda.Api
             modelBuilder.Entity<Models.Usuario>()
                 .HasData(
                 new Models.Usuario
-                {   
+                {
                     Id = 1,
                     Nome = "Admin",
                     Email = "admin@admin",
                     Senha = "admin123"
                 }
-                );
+            );
             base.OnModelCreating(modelBuilder);
 
-
+            modelBuilder.Entity<Models.CardapioItem>()
+        
 
             modelBuilder.Entity<Models.Mesa>()
                 .HasData(
                 new Models.Mesa
-                {
-                    Id = 1,
+                    {
+                        Id = 1,
                     NumeroMesa = 1,
                     SituacaoMesa = 0
-                },
+                    },
                  new Models.Mesa
-                 {
-                     Id = 2,
+                    {
+                        Id = 2,
                      NumeroMesa = 2,
                      SituacaoMesa = 0
-                 },
+                    },
                     new Models.Mesa
                     {
                         Id = 3,
@@ -49,13 +50,13 @@ namespace Comanda.Api
             modelBuilder.Entity<Models.CardapioItem>()
                 .HasData(
                 new Models.CardapioItem
-                {
-                    Id = 1,
+                    {
+                        Id = 1,
                     Descricao = "Hambúrguer clássico com queijo, alface, tomate e molho especial.",
                     Titulo = "Hambúrguer Clássico",
                     Preco = 20,
                     PossuiPreparo = true
-                },
+                    },
                     new Models.CardapioItem
                     {
                         Id = 2,
@@ -89,5 +90,6 @@ namespace Comanda.Api
         public DbSet<Models.PedidoCozinha> PedidoCozinhas{ get; set; } = default!;
         public DbSet<Models.PedidoCozinhaItem> PedidoCozinhaItens { get; set; } = default!;
         public DbSet<Models.CardapioItem> CardapioItems { get; set; } = default!;
+
     }
 }

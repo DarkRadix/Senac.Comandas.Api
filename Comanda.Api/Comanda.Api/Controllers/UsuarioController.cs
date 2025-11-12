@@ -88,6 +88,8 @@ namespace Comanda.Api.Controllers
             _context.SaveChanges();
             return Results.NoContent();
 
+            // retorno no content
+            return Results.NoContent();
         }
 
         // DELETE api/<UsuarioController>/5

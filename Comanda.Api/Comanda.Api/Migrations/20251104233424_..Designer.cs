@@ -2,6 +2,7 @@
 using Comanda.Api;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Comanda.Api.Migrations
 {
     [DbContext(typeof(ComandasDBContext))]
-    partial class ComandasDBContextModelSnapshot : ModelSnapshot
+    [Migration("20251104233424_.")]
+    partial class _
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.21");
@@ -39,32 +42,6 @@ namespace Comanda.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CardapioItems");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Descricao = "Hambúrguer clássico com queijo, alface, tomate e molho especial.",
-                            PossuiPreparo = true,
-                            Preco = 20m,
-                            Titulo = "Hambúrguer Clássico"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Descricao = "Refrigerante gelado de 350ml para acompanhar sua refeição.",
-                            PossuiPreparo = false,
-                            Preco = 5m,
-                            Titulo = "Refrigerante 350ml"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Descricao = "Porção de batatas fritas crocantes e douradas.",
-                            PossuiPreparo = true,
-                            Preco = 10m,
-                            Titulo = "Batatas Fritas"
-                });
                 });
 
             modelBuilder.Entity("Comanda.Api.Models.Comanda", b =>
@@ -119,26 +96,6 @@ namespace Comanda.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Mesas");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            NumeroMesa = 1,
-                            SituacaoMesa = 0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            NumeroMesa = 2,
-                            SituacaoMesa = 0
-                        },
-                        new
-                        {
-                            Id = 3,
-                            NumeroMesa = 3,
-                            SituacaoMesa = 0
-                        });
                 });
 
             modelBuilder.Entity("Comanda.Api.Models.PedidoCozinha", b =>
@@ -175,7 +132,7 @@ namespace Comanda.Api.Migrations
 
                     b.HasIndex("PedidoCozinhaId");
 
-                    b.ToTable("PedidoCozinhaItens");
+                    b.ToTable("PedidoCozinhaItems");
                 });
 
             modelBuilder.Entity("Comanda.Api.Models.Reserva", b =>
@@ -221,26 +178,15 @@ namespace Comanda.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Usuarios");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Email = "admin@admin",
-                            Nome = "Admin",
-                            Senha = "admin123"
-                        });
                 });
 
             modelBuilder.Entity("Comanda.Api.Models.ComandaItem", b =>
                 {
-                    b.HasOne("Comanda.Api.Models.Comanda", "Comanda")
+                    b.HasOne("Comanda.Api.Models.Comanda", null)
                         .WithMany("Itens")
                         .HasForeignKey("ComandaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Comanda");
                 });
 
             modelBuilder.Entity("Comanda.Api.Models.PedidoCozinha", b =>
