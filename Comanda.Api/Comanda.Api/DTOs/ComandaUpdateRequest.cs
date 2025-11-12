@@ -2,7 +2,16 @@
 {
     public class ComandaUpdateRequest
     {
-        public string NomeCliente { get; set; }
+        public string NomeCliente { get; set; } = default!;
         public int NumeroMesa { get; set; }
+        public ComandaItemUpdateRequest[] Itens { get; set; } = [];
     }
+}
+
+
+public class ComandaItemUpdateRequest
+{
+    public int Id { get; set; }
+    public bool Remove { get; set; }
+    public int CardapioItemId { get; set; }
 }

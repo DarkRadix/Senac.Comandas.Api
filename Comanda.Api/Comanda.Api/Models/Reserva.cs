@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Comanda.Api.Models
 {
-    public class ComandaItem
+    public class Reserva
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public int ComandaId { get; set; }
-        public virtual Comanda Comanda { get; set; }
-        public int CardapioItemId { get; set; }
+        public int NumeroMesa { get; set; }
+        public string NomeCliente { get; set; } = default!;
+        public string Telefone { get; set; } = default!;
     }
 }
