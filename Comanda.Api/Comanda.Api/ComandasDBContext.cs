@@ -22,7 +22,7 @@ namespace Comanda.Api
             );
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Models.CardapioItem>()
+            modelBuilder.Entity<Models.CardapioItem>();
         
 
             modelBuilder.Entity<Models.Mesa>()

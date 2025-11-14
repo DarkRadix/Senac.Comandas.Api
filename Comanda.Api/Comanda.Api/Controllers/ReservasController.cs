@@ -43,19 +43,33 @@ namespace Comanda.Api.Controllers
         }
 
         // PUT: api/Reservas/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+       [HttpPut("{id}")]
         public async Task<IActionResult> PutReserva(int id, Reserva reserva)
         {
             if (id != reserva.Id)
             {
                 return BadRequest();
             }
-
+            // atualização
             _context.Entry(reserva).State = EntityState.Modified;
+
+            //remoção e inclusao da reserva na mesa (2 - reservada - 1.livre)
+            var novaMesa = await _context.Mesas
+                .FirstOrDefaultAsync(m=>m.NumeroMesa == reserva.NumeroMesa);
+            if(novaMesa is null)
+                return BadRequest("Mesa não encontrada.");
+            novaMesa.SituacaoMesa = (int)SituacaoMesa.Reservado;
+            //2 - livre 1 - reservada
+
+            var reservaOriginal = await _context.Reservas.FirstOrDefaultAsync(r => r.Id == id);
+            var numeroMesaOriginal = reservaOriginal!.NumeroMesa;
+            var mesaOriginal = await _context.Mesas.FirstOrDefaultAsync(m => m.NumeroMesa == numeroMesaOriginal);
+            mesaOriginal!.SituacaoMesa = (int)SituacaoMesa.Livre;
+
 
             try
             {
+                //salva
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -78,7 +92,25 @@ namespace Comanda.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<Reserva>> PostReserva(Reserva reserva)
         {
-            _context.Reservas.Add(reserva);
+            _context.Reservas.Add(reserva); 
+
+            var mesa = await _context.Mesas.
+                FirstOrDefaultAsync(m => m.NumeroMesa 
+                == reserva.NumeroMesa);
+
+
+
+                if(mesa is null)
+                return BadRequest("Mesa não encontrada.");
+            {
+                if (mesa.SituacaoMesa != (int)SituacaoMesa.Livre)
+                {
+                    return BadRequest("Mesa não está livre para reserva.");
+                }
+                mesa.SituacaoMesa = (int)SituacaoMesa.Reservado;
+            }
+
+
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetReserva", new { id = reserva.Id }, reserva);
@@ -91,14 +123,25 @@ namespace Comanda.Api.Controllers
             var reserva = await _context.Reservas.FindAsync(id);
             if (reserva == null)
             {
-                return NotFound();
+                return NotFound("Reserva nao encontrada");
             }
+
+            //consultar a mesa
+            var mesa = await _context.Mesas.
+                FirstOrDefaultAsync(m => m.NumeroMesa
+                == reserva.NumeroMesa);
+            if (mesa is null)
+                return BadRequest("Mesa não encontrada");
+            mesa.SituacaoMesa = (int)SituacaoMesa.Livre;
 
             _context.Reservas.Remove(reserva);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
+
+
+
 
         private bool ReservaExists(int id)
         {
