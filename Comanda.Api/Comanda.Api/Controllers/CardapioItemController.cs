@@ -48,22 +48,23 @@ namespace Comanda.Api.Controllers
         {
             if(cardapio.Titulo.Length < 3)
             {
-                Results.BadRequest("O título deve ter no mínimo 3 caracteres.");
+              return  Results.BadRequest("O título deve ter no mínimo 3 caracteres.");
             }
             if(cardapio.Descricao.Length < 5)
             {
-                Results.BadRequest("A descrição deve ter no mínimo 5 caracteres.");
+              return  Results.BadRequest("A descrição deve ter no mínimo 5 caracteres.");
             }
             if(cardapio.Preco <= 0)
             {
-                Results.BadRequest("O preço deve ser maior que zero.");
+              return Results.BadRequest("O preço deve ser maior que zero.");
             }
             var cardapioItem = new CardapioItem
             {
                 Titulo = cardapio.Titulo,
                 Descricao = cardapio.Descricao,
                 Preco = cardapio.Preco,
-                PossuiPreparo = cardapio.PossuiPreparo
+                PossuiPreparo = cardapio.PossuiPreparo,
+                CategoriaCardapioId = cardapio.CategoriaCardapioId
             };
             _context.CardapioItems.Add(cardapioItem);
             _context.SaveChanges();

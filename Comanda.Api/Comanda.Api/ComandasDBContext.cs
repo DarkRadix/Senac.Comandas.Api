@@ -21,31 +21,21 @@ namespace Comanda.Api
                 }
             );
             base.OnModelCreating(modelBuilder);
-
             modelBuilder.Entity<Models.CardapioItem>();
-        
-
             modelBuilder.Entity<Models.Mesa>()
                 .HasData(
-                new Models.Mesa
-                    {
-                        Id = 1,
-                    NumeroMesa = 1,
-                    SituacaoMesa = 0
-                    },
                  new Models.Mesa
                     {
-                        Id = 2,
-                     NumeroMesa = 2,
-                     SituacaoMesa = 0
-                    },
-                    new Models.Mesa
-                    {
-                        Id = 3,
-                        NumeroMesa = 3,
-                        SituacaoMesa = 0
-                    }
+                  Id = 1,NumeroMesa = 1,SituacaoMesa = 0},
+                 new Models.Mesa{Id = 2,NumeroMesa = 2,SituacaoMesa = 0},
+                 new Models.Mesa{Id = 3,NumeroMesa = 3,SituacaoMesa = 0}
                 );
+            modelBuilder.Entity<Models.CategoriaCardapio>()
+                 .HasData(
+                 new Models.CategoriaCardapio { Id = 1, Nome = "Lanches" },
+                 new Models.CategoriaCardapio { Id = 2, Nome = "Bebidas" },
+                 new Models.CategoriaCardapio { Id = 3, Nome = "Acompanhamentos" }
+                 );
 
             modelBuilder.Entity<Models.CardapioItem>()
                 .HasData(
@@ -90,6 +80,7 @@ namespace Comanda.Api
         public DbSet<Models.PedidoCozinha> PedidoCozinhas{ get; set; } = default!;
         public DbSet<Models.PedidoCozinhaItem> PedidoCozinhaItens { get; set; } = default!;
         public DbSet<Models.CardapioItem> CardapioItems { get; set; } = default!;
+        public DbSet<Models.CategoriaCardapio> CategoriaCardapio { get; set; } = default!;
 
     }
 }
