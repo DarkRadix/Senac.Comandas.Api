@@ -9,7 +9,7 @@ namespace Comanda.Api.Controllers
     [Route("api/[controller]")]
     [ApiController]
      public class UsuarioController : ControllerBase
-    {
+    { 
         public  ComandasDBContext _context { get; set; }
         //construtor
         public UsuarioController(ComandasDBContext context) 
@@ -49,6 +49,12 @@ namespace Comanda.Api.Controllers
                 return Results.BadRequest("O nome deve ter no mínimo 3 caracteres.");
             if (usuarioCreate.Email.Length < 6)
                 return Results.BadRequest("O email deve ser valido");
+            var existente = _context.Usuarios.
+                FirstOrDefault(u => u.Email == usuarioCreate.Email);
+            if (existente is not null)
+                return Results.BadRequest("Já existe um usuário com esse email.");
+
+
             var usuario = new Usuario
             {
                 Nome = usuarioCreate.Nome,
@@ -108,6 +114,20 @@ namespace Comanda.Api.Controllers
             return Results.StatusCode(500);
 
 
+        }
+        //criar metodo de login
+        //POST api/usuario/login
+        //{"email":" "yury20@live.com","senha":"123456"}
+        [HttpPost("login")]
+        public IResult Login([FromBody] LoginRequest loginRequest)
+        { 
+            var usuario = _context.Usuarios.
+                FirstOrDefault(u => u.Email == loginRequest.email &&
+                                    u.Senha == loginRequest.senha);
+            if (usuario is null)
+                return Results.Unauthorized();
+
+            return Results.Ok("Usuário autenticado");
         }
     }
 }
